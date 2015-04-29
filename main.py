@@ -7,21 +7,21 @@ class App(tk.Frame):
         tk.Frame.__init__(self)
         self.root=myRoot
         myRoot.title('Caterpillar Game')
-        myRoot.geometry('600x600')
+        myRoot.geometry('600x500')
         self.start=True
         self.gameOver=False
-        myRoot.grid()
+        self.grid()
         self.createWidgetStart()
     
     def createWidgetStart(self):
         pic=tk.PhotoImage(file='caterpillar.gif')
-        picLabel=tk.Label(self, image=pic)
+        picLabel=tk.Label(self,image=pic)
         picLabel.pic=pic
-        picLabel.grid(row=2, column=0)
-        self.startButton=tk.Button(text='Start', command='')
-        self.startButton.grid(row=3,column=2)
+        picLabel.grid(row=1, column=1)
+        self.startButton=tk.Button(self,text='Start')
+        self.startButton.grid(row=10,column=1)
 
 
 root= tk.Tk()
 app=App(root)
-app.mainloop()
+root.mainloop()
