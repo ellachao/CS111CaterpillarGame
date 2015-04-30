@@ -62,38 +62,17 @@ class MazyApp(tk.Toplevel):
         self.unbind('<Up>')
         self.unbind('<Down>')
         
-    
-    #def move(self, dirRow, dirCol):
-    #    self.directionRow = dirRow #store direction for next time event
-    #    self.directionColumn = dirCol
-    #    newHeadRow = self.headRow + dirRow
-    #    newHeadCol = self.headCol + dirCol
-    #    if newHeadRow < 0 or newHeadRow >= boardRows or newHeadCol < 0 or newHeadCol >= boardCols:
-    #        # runs off the board
-    #        self.gameOver = True
-    #    elif [newHeadRow,newHeadCol] in self.coordinates:
-    #        #runs into itself
-    #        self.gameOver = True
-    #    elif [newHeadRow,newHeadCol] == self.foodCoor:
-    #        # eating food!
-    #        self.coordinates.append([newHeadRow,newHeadCol])
-    #        self.headRow = newHeadRow
-    #        self.headCol = newHeadCol
-    #        placeFood()
-    #    else:
-    #        # normal move forward (not eating food)
-    #        self.coordinates.append([newHeadRow,newHeadCol])
-    #        self.headRow = newHeadRow
-    #        self.headCol = newHeadCol
-    #        self.coordinates = self.coordinates [1:]
             
     def leftKey(self, event):
         row = self.mazyPosition[0]
         col = self.mazyPosition[1]
         self.mazyPosition = (row, col-1)
         self.handleGameOver()
-        self.setMazeLabel(self.emptyImage,mazeColor,row,col)
-        self.setMazyLabel()
+        self.coordinates.append((row, col-1))
+        self.setMazeLabel(self.emptyImage,mazeColor,self.coordinates [0][0],self.coordinates [0][1])
+        self.coordinates = self.coordinates [1:]
+        
+        map(self.setMazyLabel(),self.coordinates)
         
 
     def rightKey(self, event):
@@ -101,24 +80,30 @@ class MazyApp(tk.Toplevel):
         col = self.mazyPosition[1]
         self.mazyPosition = (row, col+1)
         self.handleGameOver()
-        self.setMazeLabel(self.emptyImage,mazeColor,row,col)
-        self.setMazyLabel()
+        self.coordinates.append((row, col-1))
+        #self.setMazeLabel(self.emptyImage,mazeColor,self.coordinates [0][0],self.coordinates [0][1])
+        self.coordinates = self.coordinates [1:]
+        map(self.setMazyLabel(),self.coordinates)
                 
     def upKey(self, event):
         row = self.mazyPosition[0]
         col = self.mazyPosition[1]
         self.mazyPosition = (row-1, col)
         self.handleGameOver()
-        self.setMazeLabel(self.emptyImage,mazeColor,row,col)
-        self.setMazyLabel()
+        self.coordinates.append((row, col-1))
+        #self.setMazeLabel(self.emptyImage,mazeColor,self.coordinates [0][0],self.coordinates [0][1])
+        self.coordinates = self.coordinates [1:]
+        map(self.setMazyLabel(),self.coordinates)
 
     def downKey(self, event):
         row = self.mazyPosition[0]
         col = self.mazyPosition[1]
         self.mazyPosition = (row+1, col)
         self.handleGameOver()
-        self.setMazeLabel(self.emptyImage,mazeColor,row,col)
-        self.setMazyLabel()
+        self.coordinates.append((row, col-1))
+        #self.setMazeLabel(self.emptyImage,mazeColor,self.coordinates [0][0],self.coordinates [0][1])
+        self.coordinates = self.coordinates [1:]
+        map(self.setMazyLabel(),self.coordinates)
         
 
 
@@ -140,7 +125,7 @@ class MazyApp(tk.Toplevel):
             self.status.set(self.statusText)
             self.unbindArrowKeys()
             
-        elif self.runIntoSelf(self):
+        elif self.runIntoSelf():
             #runs into itself
             self.statusText = 'Oops, Game Over.'
             self.status.set(self.statusText)
@@ -152,16 +137,10 @@ class MazyApp(tk.Toplevel):
             self.statusText = 'Weeeeeee! Current Score = ' + str(self.score)
             self.status.set(self.statusText)
             self.placeFood()
+   
             
  
         
-        #else:
-        #    # normal move forward (not eating food)
-        #    self.coordinates.append([newHeadRow,newHeadCol])
-        #    self.headRow = newHeadRow
-        #    self.headCol = newHeadCol
-        #    self.coordinates = self.coordinates [1:]
-        #
         
 
                                       

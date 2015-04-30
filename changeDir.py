@@ -5,7 +5,7 @@ import Tkinter  as tk
 boardRows = 10
 boardCols = 10
 self.coordinates = []
-self.foodCoor = []
+self.foodCoor
 
 
 
