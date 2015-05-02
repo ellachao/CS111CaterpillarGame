@@ -1,79 +1,166 @@
-import Tkinter as tk
-import time
+import pygame
 import random
 
-class App(tk.Frame):
-    def __init__(self,myRoot):
-        tk.Frame.__init__(self)
-        self.root=myRoot
-        myRoot.title('Caterpillar Game')
-        myRoot.geometry('600x500')
+RADIUS=15
+SCREEN=600
+
+
+
+xCoor=random.randint(0,19)*2*RADIUS+RADIUS
+yCoor=random.randint(0,19)*2*RADIUS+RADIUS
+
+
+class View:
+    """
+    Window view which contains the gui and game screen
+    """
+    def __init__(self,screen,model):
+        self.model=model
+        self.screen = screen
         self.start=True
         self.gameOver=False
-        self.grid()
-        self.createWidgetStart()
     
-    def createWidgetStart(self):
-        pic=tk.PhotoImage(file='caterpillar.gif')
+        
+    def drawApple(self):
+        red=(255,0,0)
+        self.model.apple()
+        pygame.draw.circle(self.screen, red,self.model.apple(), RADIUS, 0),
+        
+    def update(self):
+        #identify if runs into self
+        if self.model.curPos in self.model.coordinates[:-1]:
+            self.gameOver = True
+                    
+        #identify if runs out of boundary
+        if self.model.curPos[0] not in range(600) or self.model.curPos[1] not in range(600):
+            self.gameOver = True
+        blue=(0,0,255)
+        red=(255,0,0)
+        pygame.draw.circle(self.screen, red, (xCoor,yCoor), RADIUS, 0)
+        
+        #else:
+        #    if self.model.curPos==self.model.apple():
+        #        self.drawApple()
+        for i in self.model.coordinates:
+            pygame.draw.circle(self.screen, blue, (i[0],i[1]), RADIUS, 0)
 
-        picLabel=tk.Label(self,image=pic)
-        picLabel.pic=pic
-        picLabel.grid(row=1, column=1)
-        self.startButton=tk.Button(self,text='Start')
-        self.startButton.grid(row=10,column=1)
+        pygame.display.update()
 
+        
+        
 
-root= tk.Tk()
-app=App(root)
-root.mainloop()
+class Model:
+    def __init__(self,curPos):
+        self.coordinates=[]
+        self.curPos=curPos
+        self.coordinates.append(self.curPos)
+    
+    def apple(self):
+        return (random.randint(0,19)*2*RADIUS,random.randint(0,19)*2*RADIUS)
 
-#
-#import random
-#import Tkinter  as tk
+    #def update(self):
+    #    for event in pygame.event.get():
+    #        if event.type == pygame.KEYDOWN:
+    #            if event.key == pygame.K_LEFT:
+    #                self.curPos=(self.curPos[0]-RADIUS*2,self.curPos[1])
+    #                self.coordinates.append(self.curPos)
+    #                self.coordinates=self.coordinates[1:]
+    #            elif event.key == pygame.K_RIGHT:
+    #                self.curPos=(self.curPos[0]+RADIUS*2,self.curPos[1])
+    #                self.coordinates.append(self.curPos)
+    #                self.coordinates=self.coordinates[1:]
+    #            elif event.key == pygame.K_UP:
+    #                self.curPos=(self.curPos[0],self.curPos[1]-RADIUS*2)
+    #                self.coordinates.append(self.curPos)
+    #                self.coordinates=self.coordinates[1:]
+    #            elif event.key == pygame.K_DOWN:
+    #                self.curPos=(self.curPos[0],self.curPos[1]+RADIUS*2)
+    #                self.coordinates.append(self.curPos)
+    #                self.coordinates=self.coordinates[1:]
+    def update(self):
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                #identify pressed key
+                if event.key == pygame.K_LEFT:
+                    self.move(-1,0)
+                elif event.key == pygame.K_RIGHT:
+                    self.move(1,0)
+                elif event.key == pygame.K_UP:
+                    self.move(0,-1)
+                elif event.key == pygame.K_DOWN:
+                    self.move(0,1)
+                    
+                
+                
+    
 
-boardRows = 10
-boardCols = 10
-self.coordinates = []
-self.foodCoor = []
+    def move(self,x,y):
+        self.curPos=(self.curPos[0]+x*RADIUS*2,self.curPos[1]+y*RADIUS*2)
+        self.coordinates.append(self.curPos)
+        #identify eat apple or not
+        if self.curPos!=(xCoor,yCoor):
+            self.coordinates=self.coordinates[1:]
+        else:   
+            global xCoor
+            xCoor=random.randint(0,19)*2*RADIUS+RADIUS
+            global yCoor
+            yCoor=random.randint(0,19)*2*RADIUS+RADIUS
 
+class Start:
+    
+    def __init__(self,screen,view):
+        self.view=view
+        self.screen=screen
+        pygame.draw.rect(self.screen, (60,60,60),(250,450,100,50),2)
+        font = pygame.font.Font(None, 36)
+        screen.blit(font.render("Start",True,(255,0,0)),(270,465))
+        self.image()
+        self.click()
+    def image(self):
+        pic = pygame.image.load("fruit.jpg").convert()
+        self.screen.blit(pic, (50, 100))
+    def click(self):
+        for event in pygame.event.get():
+            if event.type ==pygame.MOUSEBUTTONDOWN:
+                position=pygame.mouse.get_pos()
+                if position[0] in range(250,350) and position[1] in range(450,500):
+                    self.view.start=False
+           
 
+                    
 
-def changeDir(self, event):
-    canvas = event.widget.canvas
-    # now process keys that only work if the game is not over
-    if self.gameOver == False :
-        if (event.keysym == "Up"):
-            move(canvas, -1, 0)
-        elif (event.keysym == "Down"):
-            move(canvas, +1, 0)
-        elif (event.keysym == "Left"):
-            move(canvas, 0,-1)
-        elif (event.keysym == "Right"):
-            move(canvas, 0,+1)
-    redrawAll(canvas)
+def main():
+    # initialize the pygame environment
+    pygame.init()
+    # config the screen
+    screen_size = (SCREEN,SCREEN)
+    screen = pygame.display.set_mode(screen_size)
+    white = (255, 255, 255)
+    screen.fill(white)
+    model = Model((315,315))
+    view = View(screen,model)
+    while view.start==True:
+        screen.fill(white)
+        Start(screen,view)
+        pygame.display.update()
 
+    while view.start==False and view.gameOver == False:
+        screen.fill(white)
+        model.update()
+        view.update()
+    
+    while view.gameOver == True:
+        font = pygame.font.Font(None, 50)
+        screen.blit(font.render("Game Over!",True,(255,0,0)),(200,100))
+        pygame.display.update()
+        event=pygame.event.poll()
+        if event.type == pygame.QUIT:
+           pygame.quit()
+        
+    
 
+    
 
-def move(self, dirRow, dirCol):
-    self.directionRow = dirRow #store direction for next time event
-    self.directionColumn = dirCol
-    newHeadRow = self.headRow + dirRow
-    newHeadCol = self.headCol + dirCol
-    if newHeadRow < 0 or newHeadRow >= boardRows or newHeadCol < 0 or newHeadCol >= boardCols:
-        # runs off the board
-        self.gameOver = True
-    elif [newHeadRow,newHeadCol] in self.coordinates:
-        #runs into itself
-        self.gameOver = True
-    elif [newHeadRow,newHeadCol] == self.foodCoor:
-        # eating food!
-        self.coordinates.append([newHeadRow,newHeadCol])
-        self.headRow = newHeadRow
-        self.headCol = newHeadCol
-        placeFood()
-    else:
-        # normal move forward (not eating food)
-        self.coordinates.append([newHeadRow,newHeadCol])
-        self.headRow = newHeadRow
-        self.headCol = newHeadCol
-        self.coordinates = self.coordinates [1:]
+if __name__ == "__main__":
+    main()
+    
