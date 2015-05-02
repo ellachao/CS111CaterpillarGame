@@ -19,12 +19,6 @@ class View:
         self.screen = screen
         self.start=True
         self.gameOver=False
-    
-        
-    def drawApple(self):
-        red=(255,0,0)
-        self.model.apple()
-        pygame.draw.circle(self.screen, red,self.model.apple(), RADIUS, 0),
         
     def update(self):
         #identify if runs into self
@@ -34,19 +28,15 @@ class View:
         #identify if runs out of boundary
         if self.model.curPos[0] not in range(600) or self.model.curPos[1] not in range(600):
             self.gameOver = True
-        blue=(0,0,255)
+        green=[(0,153,0),(0,102,0),(0,102,51),(0,204,102),(0,153,76)]
         red=(255,0,0)
         pygame.draw.circle(self.screen, red, (xCoor,yCoor), RADIUS, 0)
         
-        #else:
-        #    if self.model.curPos==self.model.apple():
-        #        self.drawApple()
         for i in self.model.coordinates:
-            pygame.draw.circle(self.screen, blue, (i[0],i[1]), RADIUS, 0)
+            pygame.draw.circle(self.screen, green[random.randint(0,4)], (i[0],i[1]), RADIUS, 0)
 
         pygame.display.update()
-
-        
+      
         
 
 class Model:
@@ -54,29 +44,7 @@ class Model:
         self.coordinates=[]
         self.curPos=curPos
         self.coordinates.append(self.curPos)
-    
-    def apple(self):
-        return (random.randint(0,19)*2*RADIUS,random.randint(0,19)*2*RADIUS)
-
-    #def update(self):
-    #    for event in pygame.event.get():
-    #        if event.type == pygame.KEYDOWN:
-    #            if event.key == pygame.K_LEFT:
-    #                self.curPos=(self.curPos[0]-RADIUS*2,self.curPos[1])
-    #                self.coordinates.append(self.curPos)
-    #                self.coordinates=self.coordinates[1:]
-    #            elif event.key == pygame.K_RIGHT:
-    #                self.curPos=(self.curPos[0]+RADIUS*2,self.curPos[1])
-    #                self.coordinates.append(self.curPos)
-    #                self.coordinates=self.coordinates[1:]
-    #            elif event.key == pygame.K_UP:
-    #                self.curPos=(self.curPos[0],self.curPos[1]-RADIUS*2)
-    #                self.coordinates.append(self.curPos)
-    #                self.coordinates=self.coordinates[1:]
-    #            elif event.key == pygame.K_DOWN:
-    #                self.curPos=(self.curPos[0],self.curPos[1]+RADIUS*2)
-    #                self.coordinates.append(self.curPos)
-    #                self.coordinates=self.coordinates[1:]
+   
     def update(self):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
@@ -88,11 +56,7 @@ class Model:
                 elif event.key == pygame.K_UP:
                     self.move(0,-1)
                 elif event.key == pygame.K_DOWN:
-                    self.move(0,1)
-                    
-                
-                
-    
+                    self.move(0,1) 
 
     def move(self,x,y):
         self.curPos=(self.curPos[0]+x*RADIUS*2,self.curPos[1]+y*RADIUS*2)
@@ -125,9 +89,7 @@ class Start:
                 position=pygame.mouse.get_pos()
                 if position[0] in range(250,350) and position[1] in range(450,500):
                     self.view.start=False
-           
-
-                    
+                          
 
 def main():
     # initialize the pygame environment
@@ -139,6 +101,7 @@ def main():
     screen.fill(white)
     model = Model((315,315))
     view = View(screen,model)
+    
     while view.start==True:
         screen.fill(white)
         Start(screen,view)
@@ -157,9 +120,6 @@ def main():
         if event.type == pygame.QUIT:
            pygame.quit()
         
-    
-
-    
 
 if __name__ == "__main__":
     main()
