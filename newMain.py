@@ -5,17 +5,14 @@ RADIUS=15
 SCREEN=600
 
 
-
-xCoor=random.randint(0,19)*2*RADIUS+RADIUS
-yCoor=random.randint(0,19)*2*RADIUS+RADIUS
-
-
 class View:
-    def __init__(self,screen,model):
+    def __init__(self,screen,model,app):
         self.model=model
         self.screen = screen
         self.start=True
         self.gameOver=False
+        self.app=app
+        
         
     def update(self):
         #identify if runs into self
@@ -27,7 +24,7 @@ class View:
             self.gameOver = True
         green=[(0,153,0),(0,102,0),(0,102,51),(0,204,102),(0,153,76)]
         red=(255,0,0)
-        pygame.draw.circle(self.screen, red, (xCoor,yCoor), RADIUS, 0)
+        pygame.draw.circle(self.screen, red, (self.app.xCoor,self.app.yCoor), RADIUS, 0)
         
         for i in self.model.coordinates:
             pygame.draw.circle(self.screen, green[random.randint(0,4)], (i[0],i[1]), RADIUS, 0)
@@ -37,10 +34,12 @@ class View:
         
 
 class Model:
-    def __init__(self,curPos):
+    def __init__(self,curPos,app):
         self.coordinates=[]
         self.curPos=curPos
         self.coordinates.append(self.curPos)
+        self.app=app
+
    
     def update(self):
         for event in pygame.event.get():
@@ -59,13 +58,11 @@ class Model:
         self.curPos=(self.curPos[0]+x*RADIUS*2,self.curPos[1]+y*RADIUS*2)
         self.coordinates.append(self.curPos)
         #identify eat apple or not
-        if self.curPos!=(xCoor,yCoor):
+        if self.curPos!=(self.app.xCoor,self.app.yCoor):
             self.coordinates=self.coordinates[1:]
         else:   
-            global xCoor
-            xCoor=random.randint(0,19)*2*RADIUS+RADIUS
-            global yCoor
-            yCoor=random.randint(0,19)*2*RADIUS+RADIUS
+            self.app.xCoor=random.randint(0,19)*2*RADIUS+RADIUS
+            self.app.yCoor=random.randint(0,19)*2*RADIUS+RADIUS
 
 class Start:
     
@@ -87,37 +84,41 @@ class Start:
                 if position[0] in range(250,350) and position[1] in range(450,500):
                     self.view.start=False
                           
-
-def main():
+class App():
+    def __init__(self):
+        self.xCoor=random.randint(0,19)*2*RADIUS+RADIUS
+        self.yCoor=random.randint(0,19)*2*RADIUS+RADIUS  
+    def main(self):
     # initialize the pygame environment
-    pygame.init()
-    # config the screen
-    screen_size = (SCREEN,SCREEN)
-    screen = pygame.display.set_mode(screen_size)
-    white = (255, 255, 255)
-    screen.fill(white)
-    model = Model((315,315))
-    view = View(screen,model)
-    
-    while view.start==True:
+        pygame.init()
+        # config the screen
+        screen_size = (SCREEN,SCREEN)
+        screen = pygame.display.set_mode(screen_size)
+        white = (255, 255, 255)
         screen.fill(white)
-        Start(screen,view)
-        pygame.display.update()
-
-    while view.start==False and view.gameOver == False:
-        screen.fill(white)
-        model.update()
-        view.update()
+        model = Model((315,315),self)
+        view = View(screen,model,self)
+        
+        while view.start==True:
+            screen.fill(white)
+            Start(screen,view)
+            pygame.display.update()
     
-    while view.gameOver == True:
-        font = pygame.font.Font(None, 50)
-        screen.blit(font.render("Game Over!",True,(255,0,0)),(200,100))
-        pygame.display.update()
-        event=pygame.event.poll()
-        if event.type == pygame.QUIT:
-           pygame.quit()
+        while view.start==False and view.gameOver == False:
+            screen.fill(white)
+            model.update()
+            view.update()
+        
+        while view.gameOver == True:
+            font = pygame.font.Font(None, 50)
+            screen.blit(font.render("Game Over!",True,(255,0,0)),(200,100))
+            pygame.display.update()
+            event=pygame.event.poll()
+            if event.type == pygame.QUIT:
+                pygame.quit()
         
 
 if __name__ == "__main__":
-    main()
+    app=App()
+    app.main()
     
